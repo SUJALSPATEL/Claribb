@@ -145,7 +145,7 @@ export default function CollabPage() {
     ];
 
     return (
-        <div style={{ minHeight: '100vh', background: '#0a0a0a', padding: '2.5rem 2.5rem 4rem' }}>
+        <div style={{ minHeight: '100vh', background: '#0a0a0a', padding: 'clamp(1rem, 4vw, 2.5rem) clamp(1rem, 4vw, 2.5rem) 5rem' }}>
             {/* Header */}
             <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}
                 style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '2rem', flexWrap: 'wrap', gap: '1rem' }}>
@@ -217,8 +217,8 @@ export default function CollabPage() {
                                         {server.icon || '🔬'}
                                     </div>
                                     <div style={{ flex: 1, minWidth: 0 }}>
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
-                                            <span style={{ color: '#e0e0e0', fontWeight: 600, fontSize: '0.9rem' }}>{server.name}</span>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4, flexWrap: 'wrap' }}>
+                                            <span style={{ color: '#e0e0e0', fontWeight: 600, fontSize: '0.9rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '100%' }}>{server.name}</span>
                                             {server.my_role === 'owner' && (
                                                 <span style={{ fontSize: '0.6rem', color: '#E83E8C', background: 'rgba(232,62,140,0.08)', border: '1px solid rgba(232,62,140,0.2)', padding: '1px 6px', borderRadius: 99 }}>Owner</span>
                                             )}
@@ -322,7 +322,7 @@ export default function CollabPage() {
                         style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.75)', zIndex: 50, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                         onClick={e => e.target === e.currentTarget && setShowCreate(false)}>
                         <motion.div initial={{ scale: 0.95, y: 12 }} animate={{ scale: 1, y: 0 }}
-                            style={{ background: '#111', border: '1px solid #222', borderRadius: 14, padding: '1.75rem', width: 380 }}>
+                            style={{ background: '#111', border: '1px solid #222', borderRadius: 14, padding: 'clamp(1rem, 4vw, 1.75rem)', width: '90vw', maxWidth: 380 }}>
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
                                 <h3 style={{ color: '#fff', fontWeight: 700, margin: 0 }}>Create Research Server</h3>
                                 <button onClick={() => setShowCreate(false)} style={{ background: 'none', border: 'none', color: '#555', cursor: 'pointer' }}><X size={16} /></button>
@@ -368,7 +368,7 @@ export default function CollabPage() {
                         style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.75)', zIndex: 50, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                         onClick={e => e.target === e.currentTarget && setShowJoin(false)}>
                         <motion.div initial={{ scale: 0.95, y: 12 }} animate={{ scale: 1, y: 0 }}
-                            style={{ background: '#111', border: '1px solid #222', borderRadius: 14, padding: '1.75rem', width: 360 }}>
+                            style={{ background: '#111', border: '1px solid #222', borderRadius: 14, padding: 'clamp(1rem, 4vw, 1.75rem)', width: '90vw', maxWidth: 360 }}>
                             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1.25rem' }}>
                                 <h3 style={{ color: '#fff', fontWeight: 700, margin: 0 }}>Join a Server</h3>
                                 <button onClick={() => setShowJoin(false)} style={{ background: 'none', border: 'none', color: '#555', cursor: 'pointer' }}><X size={16} /></button>

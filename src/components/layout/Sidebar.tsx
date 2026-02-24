@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import {
-    Brain, LayoutDashboard, FolderOpen, Network, Settings,
+    Brain, LayoutDashboard, Network, Settings,
     LogOut, ChevronLeft, ChevronRight, Plus,
     Globe, FolderKanban, Users
 } from 'lucide-react';
@@ -23,8 +23,8 @@ export default function Sidebar() {
     const pathname = usePathname();
     const router = useRouter();
     const [collapsed, setCollapsed] = useState(false);
+    const [isMobile, setIsMobile] = useState(false);
     const [user, setUser] = useState<{ email: string; full_name?: string } | null>(null);
-    // Track last visited project so Knowledge Graph link goes somewhere useful
     const [lastProjectId, setLastProjectId] = useState<string | null>(null);
     const supabase = createClientSupabaseClient();
 
@@ -38,14 +38,16 @@ export default function Sidebar() {
 
     useEffect(() => {
         const handleResize = () => {
-            if (window.innerWidth < 768) setCollapsed(true);
+            const mobile = window.innerWidth < 768;
+            setIsMobile(mobile);
+            if (window.innerWidth < 1024 && window.innerWidth >= 768) setCollapsed(true);
+            else if (window.innerWidth >= 1024) setCollapsed(false);
         };
-        handleResize(); // Initial check
+        handleResize();
         window.addEventListener('resize', handleResize);
         return () => window.removeEventListener('resize', handleResize);
     }, []);
 
-    // Extract projectId from URL when visiting workspace/graph
     useEffect(() => {
         const workspaceMatch = pathname.match(/\/dashboard\/workspace\/([^/]+)/);
         const graphMatch = pathname.match(/\/dashboard\/graph\/([^/]+)/);
@@ -62,7 +64,6 @@ export default function Sidebar() {
         ? user.full_name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()
         : user?.email?.slice(0, 2).toUpperCase() || 'SG';
 
-    // Knowledge Graph href: last visited project → localStorage project → projects list
     const graphHref = (() => {
         if (lastProjectId) return `/dashboard/graph/${lastProjectId}`;
         try {
@@ -74,6 +75,59 @@ export default function Sidebar() {
 
     const isGraphActive = pathname.startsWith('/dashboard/graph');
 
+    // ── MOBILE: bottom tab bar ──────────────────────────────────
+    if (isMobile) {
+        return (
+            <>
+                {/* Spacer so content isn't hidden behind bottom nav */}
+                <style>{`
+                    .dashboard-main { padding-bottom: 72px !important; }
+                `}</style>
+                <nav
+                    style={{
+                        position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 50,
+                        background: 'rgba(8,8,10,0.97)',
+                        borderTop: '1px solid rgba(255,255,255,0.08)',
+                        backdropFilter: 'blur(20px)',
+                        display: 'flex', alignItems: 'center', justifyContent: 'space-around',
+                        height: 64, paddingBottom: 'env(safe-area-inset-bottom)',
+                    }}
+                >
+                    {navItems.map(({ href, label, icon: Icon }) => {
+                        const isActive = href === '/dashboard'
+                            ? pathname === '/dashboard'
+                            : pathname === href || pathname.startsWith(href + '/');
+                        return (
+                            <Link key={href} href={href} style={{ textDecoration: 'none' }}>
+                                <div style={{
+                                    display: 'flex', flexDirection: 'column', alignItems: 'center',
+                                    gap: 3, padding: '6px 12px', borderRadius: 10,
+                                    color: isActive ? '#E83E8C' : '#555',
+                                    transition: 'color 0.15s',
+                                }}>
+                                    <Icon size={20} />
+                                    <span style={{ fontSize: '0.6rem', fontWeight: isActive ? 600 : 400 }}>{label}</span>
+                                    {isActive && (
+                                        <div style={{ width: 4, height: 4, borderRadius: '50%', background: '#E83E8C', marginTop: -2 }} />
+                                    )}
+                                </div>
+                            </Link>
+                        );
+                    })}
+                    <button onClick={handleSignOut} style={{
+                        background: 'none', border: 'none', cursor: 'pointer',
+                        display: 'flex', flexDirection: 'column', alignItems: 'center',
+                        gap: 3, padding: '6px 12px', color: '#555',
+                    }}>
+                        <LogOut size={20} />
+                        <span style={{ fontSize: '0.6rem' }}>Sign out</span>
+                    </button>
+                </nav>
+            </>
+        );
+    }
+
+    // ── DESKTOP: sidebar ────────────────────────────────────────
     return (
         <motion.aside
             animate={{ width: collapsed ? 72 : 240 }}
@@ -145,7 +199,6 @@ export default function Sidebar() {
                     );
                 })}
 
-                {/* Knowledge Graph — only shown once a project is open */}
                 {lastProjectId && (
                     <Link href={graphHref}>
                         <div

@@ -1026,17 +1026,19 @@ export default function LandingPage() {
             {/* ═══ FIXED HEADER (announcement + navbar) ════════════════ */}
             <div className="fixed top-0 left-0 right-0 z-50" style={{ backdropFilter: 'blur(18px)' }}>
                 {/* ═══ ANNOUNCEMENT BAR ════════════════ */}
-                <div className="flex items-center justify-center gap-2.5 py-1.5 text-[12px] font-medium"
-                    style={{ background: '#CD3775', borderBottom: '1px solid rgba(0,0,0,0.2)' }}>
-                    <span className="w-1.5 h-1.5 rounded-full bg-white opacity-70" />
-                    <span style={{ color: 'rgba(255,255,255,0.92)' }}>SPEEDRUN 2026 · Track 3 — Multi-Agent Research Intelligence</span>
-                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold tracking-wide"
+                <div className="flex items-center justify-center gap-2 py-1.5 text-[11.5px] font-medium overflow-hidden"
+                    style={{ background: '#CD3775', borderBottom: '1px solid rgba(0,0,0,0.2)', whiteSpace: 'nowrap' }}>
+                    <span className="w-1.5 h-1.5 rounded-full bg-white opacity-70 shrink-0" />
+                    {/* Short label on mobile, full on sm+ */}
+                    <span className="sm:hidden" style={{ color: 'rgba(255,255,255,0.92)', overflow: 'hidden', textOverflow: 'ellipsis' }}>SPEEDRUN 2026 · Track 3</span>
+                    <span className="hidden sm:inline" style={{ color: 'rgba(255,255,255,0.92)' }}>SPEEDRUN 2026 · Track 3 — Multi-Agent Research Intelligence</span>
+                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold tracking-wide shrink-0"
                         style={{ background: 'rgba(255,255,255,0.18)', color: '#ffffff', border: '1px solid rgba(255,255,255,0.28)' }}>BETA</span>
                 </div>
 
                 {/* ═══ NAVBAR ════════════════════════════ */}
                 <motion.nav initial={{ opacity: 0, y: -12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.42 }}
-                    className="flex items-center justify-between px-8 h-14 max-w-screen-xl mx-auto"
+                    className="flex items-center justify-between px-4 md:px-8 h-14 max-w-screen-xl mx-auto"
                     style={{ background: 'rgba(0,0,0,0.92)', borderBottom: `1px solid ${C.border}` }}>
                     {/* Logo */}
                     <div className="flex items-center gap-2.5">
@@ -1068,7 +1070,7 @@ export default function LandingPage() {
                 {/* very subtle glow blob behind heading */}
                 <div className="absolute pointer-events-none" style={{ width: 580, height: 420, top: '10%', left: '8%', background: 'radial-gradient(ellipse,rgba(255,255,255,0.02) 0%,transparent 70%)', borderRadius: '50%' }} />
 
-                <div className="relative z-10 w-full max-w-screen-xl mx-auto px-8 grid grid-cols-1 lg:grid-cols-2 gap-20 items-center py-14">
+                <div className="relative z-10 w-full max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-20 items-center py-10 lg:py-14">
                     {/* Left — parallax style only applied after mount to avoid SSR mismatch */}
                     <motion.div style={mounted ? { y: heroY, opacity: heroOp } : {}}>
                         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.06 }}>

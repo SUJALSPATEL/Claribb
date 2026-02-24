@@ -72,12 +72,20 @@ export default function ServerDetailPage() {
     const [askingAI, setAskingAI] = useState(false);
     const [copiedCode, setCopiedCode] = useState(false);
     const [currentUser, setCurrentUser] = useState<{ id: string; name: string } | null>(null);
-    const [showMembers, setShowMembers] = useState(true);
+    const [showMembers, setShowMembers] = useState(false);
     const [loadingMsgs, setLoadingMsgs] = useState(true);
     const [members, setMembers] = useState<Member[]>([]);
     const [togglingVisibility, setTogglingVisibility] = useState(false);
     const [onlineUserIds, setOnlineUserIds] = useState<Set<string>>(new Set());
     const [aiError, setAiError] = useState<string | null>(null);
+    const [isMobile, setIsMobile] = useState(false);
+
+    useEffect(() => {
+        const check = () => setIsMobile(window.innerWidth < 768);
+        check();
+        window.addEventListener('resize', check);
+        return () => window.removeEventListener('resize', check);
+    }, []);
     const bottomRef = useRef<HTMLDivElement>(null);
     const channelRef = useRef<RealtimeChannel | null>(null);
     const presenceChannelRef = useRef<RealtimeChannel | null>(null);
@@ -439,11 +447,13 @@ export default function ServerDetailPage() {
                         <Wifi size={11} />
                         <span>{onlineCount} online</span>
                     </div>
-                    {/* Invite code */}
-                    <button onClick={copyCode} style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '0.3rem 0.6rem', borderRadius: 6, background: '#111', border: '1px solid #1e1e1e', color: copiedCode ? '#E83E8C' : '#555', fontSize: '0.72rem', cursor: 'pointer' }}>
-                        {copiedCode ? <Check size={10} /> : <Copy size={10} />}
-                        <code style={{ fontFamily: 'monospace' }}>{server.invite_code}</code>
-                    </button>
+                    {/* Invite code — hidden on small screens */}
+                    {!isMobile && (
+                        <button onClick={copyCode} style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '0.3rem 0.6rem', borderRadius: 6, background: '#111', border: '1px solid #1e1e1e', color: copiedCode ? '#E83E8C' : '#555', fontSize: '0.72rem', cursor: 'pointer' }}>
+                            {copiedCode ? <Check size={10} /> : <Copy size={10} />}
+                            <code style={{ fontFamily: 'monospace' }}>{server.invite_code}</code>
+                        </button>
+                    )}
                     {/* Members toggle */}
                     <button onClick={() => setShowMembers(s => !s)}
                         style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '0.3rem 0.6rem', borderRadius: 6, background: showMembers ? 'rgba(232,62,140,0.08)' : 'transparent', border: `1px solid ${showMembers ? 'rgba(232,62,140,0.2)' : '#1e1e1e'}`, color: showMembers ? '#E83E8C' : '#444', fontSize: '0.72rem', cursor: 'pointer' }}>
@@ -503,7 +513,7 @@ export default function ServerDetailPage() {
                                                     </span>
                                                 )}
                                                 <div style={{
-                                                    maxWidth: '75%',
+                                                    maxWidth: isMobile ? '88%' : '75%',
                                                     padding: '0.55rem 0.85rem',
                                                     borderRadius: isMe ? '12px 12px 3px 12px' : '12px 12px 12px 3px',
                                                     background: isMe ? 'rgba(232,62,140,0.14)' : isAI ? 'rgba(167,139,212,0.08)' : 'rgba(255,255,255,0.05)',
@@ -603,18 +613,27 @@ export default function ServerDetailPage() {
                                 {sending ? <Loader2 size={14} style={{ animation: 'spin 1s linear infinite' }} /> : <Send size={14} />}
                             </button>
                         </div>
-                        <p style={{ color: '#2a2a2a', fontSize: '0.65rem', marginTop: 5, marginLeft: 2 }}>
-                            <span style={{ color: '#A78BD4' }}>Enter</span> → Ask AI &nbsp;·&nbsp; <span style={{ color: '#E83E8C' }}>Ctrl+Enter</span> → Send to researchers &nbsp;·&nbsp; Shift+Enter → newline
-                        </p>
+                        {!isMobile && (
+                            <p style={{ color: '#2a2a2a', fontSize: '0.65rem', marginTop: 5, marginLeft: 2 }}>
+                                <span style={{ color: '#A78BD4' }}>Enter</span> → Ask AI &nbsp;·&nbsp; <span style={{ color: '#E83E8C' }}>Ctrl+Enter</span> → Send to researchers &nbsp;·&nbsp; Shift+Enter → newline
+                            </p>
+                        )}
                     </div>
                 </div>
 
                 {/* ── MEMBERS PANEL ── */}
                 <AnimatePresence>
                     {showMembers && (
-                        <motion.div initial={{ width: 0, opacity: 0 }} animate={{ width: 200, opacity: 1 }} exit={{ width: 0, opacity: 0 }}
+                        <motion.div initial={{ width: 0, opacity: 0 }} animate={{ width: isMobile ? '100%' : 200, opacity: 1 }} exit={{ width: 0, opacity: 0 }}
                             transition={{ duration: 0.2 }}
-                            style={{ borderLeft: '1px solid rgba(255,255,255,0.06)', background: '#060608', overflowY: 'auto', flexShrink: 0 }}>
+                            style={isMobile ? {
+                                position: 'fixed', inset: 0, zIndex: 40,
+                                background: 'rgba(0,0,0,0.85)',
+                                backdropFilter: 'blur(8px)',
+                                overflowY: 'auto',
+                            } : {
+                                borderLeft: '1px solid rgba(255,255,255,0.06)', background: '#060608', overflowY: 'auto', flexShrink: 0
+                            }}>
                             <div style={{ padding: '0.875rem 0.875rem 0.5rem' }}>
                                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.875rem' }}>
                                     <p style={{ color: '#444', fontSize: '0.65rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', margin: 0 }}>

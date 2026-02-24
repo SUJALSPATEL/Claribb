@@ -2,7 +2,13 @@
 
 **SPEEDRUN 2026 AI Hackathon Submission**
 
+### Landing Page
 ![Claribb.AI Landing Page](./docs/screenshot.png)
+
+### Research Workspace
+![Claribb.AI Research Workspace](./docs/workspace.png)
+
+🎬 **[Watch Demo Video](https://drive.google.com/file/d/1uDnGTOHsN6e65ROc4-BPSzwYsmc-TOee/view?usp=sharing)**
 
 Claribb.AI is a persistent, memory-driven AI research workspace that **remembers everything** across sessions, surfaces relevant context automatically, and deploys 4 specialized agents in parallel on every query.
 

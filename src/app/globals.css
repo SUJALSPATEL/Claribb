@@ -439,3 +439,61 @@ pre {
 [data-radix-popper-content-wrapper] {
   z-index: 100 !important;
 }
+
+/* ═══════════════════════════════════════════
+   RESPONSIVE — MOBILE & TABLET
+═══════════════════════════════════════════ */
+
+/* Ensure images never overflow */
+img, video {
+  max-width: 100%;
+  height: auto;
+}
+
+/* ── Mobile (<768px) ── */
+@media (max-width: 767px) {
+  /* Page padding tightens */
+  .p-8 { padding: 1rem !important; }
+  .px-8 { padding-left: 1rem !important; padding-right: 1rem !important; }
+  .py-8 { padding-top: 1rem !important; padding-bottom: 1rem !important; }
+
+  /* Stats bar wraps to 3-col even on very small screens */
+  .grid-cols-3 {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  }
+
+  /* Heading shrink */
+  .text-3xl { font-size: 1.4rem !important; }
+  .text-2xl { font-size: 1.2rem !important; }
+  .text-xl  { font-size: 1rem !important; }
+
+  /* Buttons: smaller padding */
+  .px-5 { padding-left: 0.75rem !important; padding-right: 0.75rem !important; }
+  .px-6 { padding-left: 0.875rem !important; padding-right: 0.875rem !important; }
+
+  /* Cards full-width */
+  .max-w-sm, .max-w-md, .max-w-lg { max-width: 100% !important; }
+
+  /* Modal fix: never overflow viewport */
+  [data-modal] { width: 90vw !important; max-width: 90vw !important; }
+
+  /* Prose text smaller */
+  .prose-sage { font-size: 0.875rem; }
+}
+
+/* ── Tablet (768px–1023px) ── */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .grid-cols-3 {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+  .lg\:grid-cols-3 {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+}
+
+/* ── Safe area for phones with bottom notch ── */
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+  .dashboard-main {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+}
