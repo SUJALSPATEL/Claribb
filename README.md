@@ -1,23 +1,26 @@
-# SAGE — Multi-Agent Research Intelligence
+# Claribb.AI — Multi-Agent Research Intelligence
 
 **SPEEDRUN 2026 AI Hackathon Submission**
 
-SAGE is a persistent, memory-driven AI research workspace that **remembers everything** across sessions, surfaces relevant context automatically, and deploys 4 specialized agents in parallel on every query.
+![Claribb.AI Landing Page](./docs/screenshot.png)
+
+Claribb.AI is a persistent, memory-driven AI research workspace that **remembers everything** across sessions, surfaces relevant context automatically, and deploys 4 specialized agents in parallel on every query.
 
 > _The AI that never forgets your research._
 
 ---
 
-## 🧠 What SAGE does
+## 🧠 What Claribb.AI does
 
 | Feature | Description |
 |---|---|
-| **Persistent Semantic Memory** | Every conversation is chunked, embedded with `text-embedding-3-small`, and stored in pgvector. SAGE retrieves the right memories for every question. |
+| **Persistent Semantic Memory** | Every conversation is chunked, embedded with `text-embedding-3-small`, and stored in pgvector. Claribb.AI retrieves the right memories for every question. |
 | **4-Agent Orchestration** | Recall · Explorer · Critique · Connector — all run in parallel on every message |
 | **Session Continuity** | Each session is summarized by GPT-4o-mini. Open questions carry forward to the next session. |
 | **Knowledge Graph** | Concepts and relationships are auto-extracted and visualized in an interactive React Flow graph |
 | **Research Digests** | Proactive AI insights: new connections, detected gaps, open questions |
 | **Streaming Responses** | Real-time SSE streaming with per-agent status indicators |
+| **Collab Servers** | Real-time collaborative research rooms with live chat + Claribb.AI group AI assistance |
 
 ---
 
@@ -59,10 +62,10 @@ Post-processing (async):
 
 - **Frontend**: Next.js 15 (App Router), React 19, Framer Motion, React Flow
 - **Backend**: Next.js API Routes (Node.js runtime), Server-Sent Events
-- **AI**: OpenAI GPT-4o-mini, text-embedding-3-small
-- **Database**: Supabase (PostgreSQL + pgvector + RLS)
+- **AI**: Groq (llama-3.3-70b-versatile), Cohere (embeddings)
+- **Database**: Supabase (PostgreSQL + RLS + Realtime)
 - **Auth**: Supabase Auth
-- **Styling**: Tailwind CSS + custom CSS variables (dark theme)
+- **Styling**: Custom CSS variables (dark theme)
 
 ---
 
@@ -76,14 +79,12 @@ npm install
 ### 2. Set up environment variables
 ```bash
 cp .env.local.example .env.local
-# Fill in your keys
+# Fill in your Supabase and AI API keys
 ```
 
 ### 3. Set up Supabase database
 1. Create a new Supabase project at [supabase.com](https://supabase.com)
-2. Enable the `vector` extension in **Database → Extensions**
-3. Run `supabase/schema.sql` in the **SQL Editor**
-4. Run `supabase/schema_v2_addendum.sql` in the **SQL Editor**
+2. Run `supabase/complete_setup.sql` in the **SQL Editor** (creates all tables, RLS policies, and triggers in one shot — no pgvector extension required)
 
 ### 4. Run locally
 ```bash
@@ -103,7 +104,7 @@ Open [http://localhost:3000](http://localhost:3000)
 | `/dashboard` | Project overview + stats |
 | `/dashboard/workspace/[projectId]` | Research chat workspace |
 | `/dashboard/graph/[projectId]` | Knowledge graph visualization |
-| `/dashboard/projects` | All projects |
+| `/dashboard/collab` | Collaborative research servers |
 | `/dashboard/settings` | User settings |
 
 ---
@@ -118,13 +119,16 @@ Open [http://localhost:3000](http://localhost:3000)
 | `/api/sessions` | GET/POST/PATCH | Session management + AI summarization |
 | `/api/graph` | GET | Knowledge graph nodes + edges |
 | `/api/digest` | GET/POST | Proactive research digest generation |
+| `/api/servers` | GET/POST/PATCH | Collab server management |
+| `/api/servers/[serverId]/chat` | POST | Group AI chat in a collab server |
+| `/api/servers/[serverId]/messages` | GET/POST | Server message history |
 
 ---
 
 ## 🤖 The 4 Agents
 
 ### 🔵 Recall Agent
-Searches your semantic memory bank using cosine similarity. Retrieves the top-8 most relevant memory chunks from your project's pgvector store.
+Searches your semantic memory bank using cosine similarity. Retrieves the top-8 most relevant memory chunks from your project's store.
 
 ### 🟦 Explorer Agent
 When recall confidence is below 0.72, triggers a web search (Tavily API) to augment with fresh information.
@@ -146,3 +150,4 @@ Key innovations:
 - **Session continuity**: open questions carry forward automatically
 - **Parallel agents**: all 4 agents run simultaneously, not sequentially
 - **Knowledge graph auto-building**: concepts extracted from every conversation
+- **Collaborative research**: real-time collab servers with group AI assistance
