@@ -1,6 +1,6 @@
 # Claribb.AI — Multi-Agent Research Intelligence
 
-**SPEEDRUN 2026 AI Hackathon Submission**
+**Collaborative AI Research Workspace & Network**
 
 ### Landing Page
 ![Claribb.AI Landing Page](./docs/screenshot.png)
@@ -147,9 +147,9 @@ Uses your existing concepts to find non-obvious connections between ideas across
 
 ---
 
-## 💡 Hackathon Notes
+## 💡 Core Philosophy
 
-Built for **SPEEDRUN 2026 AI Hackathon** — a multi-agent system that compounds knowledge across research sessions. The core thesis: _every AI interaction should make the next one smarter_.
+Built to solve the fragmented knowledge problem and connect AI researchers — a collaborative multi-agent system that compounds knowledge across research sessions. The core thesis: _every AI interaction should make the next one smarter, and collaboration should be seamless_.
 
 Key innovations:
 - **Compound memory**: the system gets more intelligent the more you use it
