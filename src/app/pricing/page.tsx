@@ -1,6 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { createClientSupabaseClient } from '@/lib/supabase/client';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Brain, Check, ArrowRight, Zap, Shield, Users, Building2, ChevronDown, Star, X } from 'lucide-react';
@@ -177,6 +178,19 @@ export default function PricingPage() {
     const [paying, setPaying] = useState<string | null>(null);
     const [openFaq, setOpenFaq] = useState<number | null>(null);
     const [toast, setToast] = useState<string | null>(null);
+    const [showUnderConstructionModal, setShowUnderConstructionModal] = useState(false);
+    const [userName, setUserName] = useState('');
+
+    useEffect(() => {
+        const supabase = createClientSupabaseClient();
+        supabase.auth.getUser().then(({ data }) => {
+            if (data?.user?.user_metadata?.name) {
+                setUserName(data.user.user_metadata.name);
+            } else if (data?.user?.email) {
+                setUserName(data.user.email.split('@')[0]);
+            }
+        });
+    }, []);
 
     const showToast = (msg: string) => {
         setToast(msg);
@@ -194,81 +208,59 @@ export default function PricingPage() {
 
     const handleUpgrade = async (plan: typeof PLANS[0]) => {
         if (!plan.priceINR || plan.priceINR === 0) return;
-        setPaying(plan.id);
-        try {
-            const loaded = await loadRazorpay();
-            if (!loaded) { showToast('Payment gateway failed to load. Please try again.'); return; }
-
-            const billingKey = billingCycle === 'annual' ? 'annual' : 'monthly';
-
-            // Step 1: Create order server-side
-            const orderRes = await fetch('/api/payments/create-order', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ planId: plan.id, billingCycle: billingKey }),
-            });
-
-            if (!orderRes.ok) {
-                const err = await orderRes.json().catch(() => ({}));
-                showToast(err.error || 'Could not create order. Please try again.');
-                return;
-            }
-
-            const { orderId, amount, currency, key } = await orderRes.json();
-
-            // Step 2: Open Razorpay checkout with real order_id
-            const options: RazorpayOptions = {
-                key: key || process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || '',
-                amount,
-                currency,
-                name: 'Claribb.AI',
-                description: `${plan.name} Plan — ${billingCycle === 'annual' ? 'Annual' : 'Monthly'}`,
-                image: '/favicon.svg',
-                order_id: orderId,
-                handler: async (response) => {
-                    // Step 3: Verify payment signature server-side
-                    try {
-                        const verifyRes = await fetch('/api/payments/verify', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({
-                                razorpay_order_id: response.razorpay_order_id,
-                                razorpay_payment_id: response.razorpay_payment_id,
-                                razorpay_signature: response.razorpay_signature,
-                                planId: plan.id,
-                                billingCycle: billingKey,
-                            }),
-                        });
-                        if (verifyRes.ok) {
-                            showToast(`✅ Payment successful! Welcome to ${plan.name} plan.`);
-                        } else {
-                            const errData = await verifyRes.json().catch(() => ({}));
-                            showToast(`Payment received but verification failed: ${errData.error || 'Please contact support.'}`);
-                        }
-                    } catch {
-                        showToast('Payment received. Please refresh to see your updated plan.');
-                    }
-                },
-                prefill: {},
-                theme: { color: plan.color },
-                modal: {
-                    ondismiss: () => setPaying(null),
-                },
-            };
-
-            const rzp = new window.Razorpay(options);
-            rzp.open();
-        } catch {
-            showToast('Something went wrong. Please try again.');
-        } finally {
-            setPaying(null);
-        }
+        setShowUnderConstructionModal(true);
     };
 
     const annualDiscount = (price: number) => Math.round(price * 10 * 0.83); // 17% off
 
     return (
         <div style={{ background: '#08080a', minHeight: '100vh', fontFamily: "'Inter', sans-serif" }}>
+            {/* Under Construction Modal */}
+            <AnimatePresence>
+                {showUnderConstructionModal && (
+                    <motion.div
+                        initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                        onClick={() => setShowUnderConstructionModal(false)}
+                        style={{
+                            position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+                            background: 'rgba(0,0,0,0.8)', backdropFilter: 'blur(8px)',
+                            display: 'flex', alignItems: 'center', justifyContent: 'center',
+                            zIndex: 100, padding: 24,
+                        }}
+                    >
+                        <motion.div
+                            initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.95, opacity: 0 }}
+                            onClick={e => e.stopPropagation()}
+                            style={{
+                                background: '#111', border: '1px solid #222', borderRadius: 16,
+                                padding: 32, maxWidth: 420, width: '100%', textAlign: 'center',
+                                position: 'relative',
+                            }}
+                        >
+                            <button onClick={() => setShowUnderConstructionModal(false)}
+                                style={{ position: 'absolute', top: 16, right: 16, background: 'transparent', border: 'none', color: '#666', cursor: 'pointer' }}>
+                                <X size={20} />
+                            </button>
+                            <div style={{ width: 56, height: 56, borderRadius: 28, background: 'rgba(232,62,140,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px' }}>
+                                <Zap size={28} style={{ color: '#E83E8C' }} />
+                            </div>
+                            <h3 style={{ fontSize: 22, fontWeight: 700, color: '#fff', marginBottom: 12 }}>Under Construction</h3>
+                            <p style={{ fontSize: 15, color: '#aaa', lineHeight: 1.6, margin: 0 }}>
+                                Sorry {userName ? <span style={{ color: '#fff', fontWeight: 600 }}>{userName}</span> : 'there'}, the pricing is still under construction and we will get back to you soon.
+                            </p>
+                            <button onClick={() => setShowUnderConstructionModal(false)}
+                                style={{
+                                    marginTop: 24, width: '100%', padding: '12px 0', borderRadius: 10,
+                                    background: '#fff', color: '#000', fontSize: 14, fontWeight: 600,
+                                    border: 'none', cursor: 'pointer',
+                                }}>
+                                Got it
+                            </button>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
             {/* Nav */}
             <nav style={{
                 position: 'fixed', top: 0, left: 0, right: 0, zIndex: 50,

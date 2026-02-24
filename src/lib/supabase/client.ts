@@ -16,7 +16,7 @@ export function createClientSupabaseClient() {
             // Use localStorage not cookies on the client to avoid lock contention
             storageKey: `sb-${supabaseUrl.split('//')[1]?.split('.')[0]}-auth-token`,
             // Disable concurrent lock — single client singleton makes this safe
-            lock: async (name, acquireTimeout, fn) => {
+            lock: async (name: string, acquireTimeout: number, fn: () => Promise<any>) => {
                 // Skip LockManager entirely and run directly — the singleton
                 // ensures only one client exists, so no contention is possible.
                 return fn();

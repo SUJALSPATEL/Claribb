@@ -4,11 +4,8 @@ import { createServerSupabaseClient } from '@/lib/supabase/server';
 
 export const runtime = 'nodejs';
 
-const razorpay = new Razorpay({
-    key_id: process.env.RAZORPAY_KEY_ID!,
-    key_secret: process.env.RAZORPAY_KEY_SECRET!,
-});
-
+// Initialize inside handler to prevent build-time crashes on Vercel
+// when environment variables are not present.
 const PLAN_AMOUNTS: Record<string, number> = {
     pro_monthly: 79900,     // ₹799 in paise
     pro_annual: 799000,     // ₹7990 in paise (10 months price)
@@ -19,6 +16,10 @@ const PLAN_AMOUNTS: Record<string, number> = {
 export async function POST(req: NextRequest) {
     try {
         // Auth check — only logged-in users can create orders
+        const razorpay = new Razorpay({
+            key_id: process.env.RAZORPAY_KEY_ID || 'dummy_key',
+            key_secret: process.env.RAZORPAY_KEY_SECRET || 'dummy_secret',
+        });
         const supabase = await createServerSupabaseClient();
         const { data: { user }, error: authErr } = await supabase.auth.getUser();
         if (authErr || !user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
