@@ -2,11 +2,19 @@
 
 **Collaborative AI Research Workspace & Network**
 
-### Landing Page
-![Claribb.AI Landing Page](./docs/screenshot.png)
+🌐 **[Visit Live Website](https://claribb-ai.vercel.app/)**
 
-### Research Workspace
-![Claribb.AI Research Workspace](./docs/workspace.png)
+### Landing Page
+![Claribb.AI Landing Page](./public/Landing%20Page.png)
+
+### Dashboard
+![Claribb.AI Dashboard](./public/Dashboard.png)
+
+### Discover
+![Claribb.AI Discover](./public/Discover.png)
+
+### Collaboration
+![Claribb.AI Collaboration](./public/Collab.png)
 
 🎬 **[Watch Demo Video](https://drive.google.com/file/d/1uDnGTOHsN6e65ROc4-BPSzwYsmc-TOee/view?usp=sharing)**
 
